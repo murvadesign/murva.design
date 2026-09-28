@@ -8,6 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800;900&family=Playfair+Display:ital,wght@1,500;1,700&display=swap">
 <style>
+#msg{font-weight:800;min-height:1.4em}
+#msg.ok{color:#5b1fc4}
+#msg.err{color:#b3261e}
+#msg a{color:#5b1fc4;text-decoration:underline}
 :root{--bg:#050505;--ink:#f4f1ec;--mute:#a9a4b3;--p:#8b3cf0;--pl:#c7a2ff;--paper:#ece8e1;--dark:#111;
 --sans:'Archivo','Arial Black',system-ui,sans-serif;--serif:'Playfair Display',Georgia,serif}
 *{box-sizing:border-box;margin:0}
@@ -130,18 +134,42 @@ nav ul{display:none}
 <p class="lead">Contame qué necesitás y te respondo con una propuesta.</p>
 <div class="links">
 <a href="https://instagram.com/murva.design" target="_blank" rel="noopener">@murva.design</a>
-<a href="murva.design@hotmail.com">murva.design@hotmail.com</a>
+<a href="mailto:murva.design@hotmail.com">murva.design@hotmail.com</a>
 </div>
 </div>
+
 <form id="f">
-<input type="hidden" name="_subject" value="Nuevo mensaje desde la web de Murva">
-<input type="hidden" name="_captcha" value="false">
-<label>Tu nombre<input name="n" required autocomplete="name"></label>
-<label>¿Qué necesitás?<select name="s"><option>Community management</option><option>Edición de videos</option><option>Diseño para redes</option><option>Papelería institucional</option><option>Logo y branding</option><option>Página web</option><option>Otra cosa</option></select></label>
-<label>Contame más<textarea name="m" required></textarea></label>
-<input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-<button class="btn" type="submit" id="send">Enviar mensaje</button>
-<p id="msg" role="status" aria-live="polite"></p>
+  <input type="hidden" name="access_key" value="PEGA_ACA_TU_CLAVE">
+  <input type="hidden" name="subject" value="Nueva consulta desde la web de Murva">
+  <input type="hidden" name="from_name" value="Web Murva Design">
+  <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+  <label>Tu nombre
+    <input name="name" required autocomplete="name">
+  </label>
+
+  <label>Tu mail
+    <input type="email" name="email" required autocomplete="email">
+  </label>
+
+  <label>¿Qué necesitás?
+    <select name="servicio">
+      <option>Community management</option>
+      <option>Edición de videos</option>
+      <option>Diseño para redes</option>
+      <option>Papelería institucional</option>
+      <option>Logo y branding</option>
+      <option>Página web</option>
+      <option>Otra cosa</option>
+    </select>
+  </label>
+
+  <label>Tu consulta
+    <textarea name="message" required></textarea>
+  </label>
+
+  <button class="btn" type="submit" id="send">Enviar mensaje</button>
+  <p id="msg" role="status" aria-live="polite"></p>
 </form>
 </div></section>
 </main>
@@ -149,20 +177,50 @@ nav ul{display:none}
 <footer><div class="wrap"><b>Murva Design</b> · Diseño · Movimiento · © 2026</div></footer>
 
 <script>
-var MAIL='murva.design@hotmail.com'; // <- poné tu mail acá
-document.getElementById('f').addEventListener('submit',function(e){
-e.preventDefault();
-var btn=document.getElementById('send'),msg=document.getElementById('msg'),d=new FormData(this);
-btn.disabled=true;btn.textContent='Enviando...';msg.className='';msg.textContent='';
-fetch('https://formsubmit.co/ajax/'+MAIL,{method:'POST',headers:{'Accept':'application/json'},body:d})
-.then(function(r){return r.json()})
-.then(function(j){
-if(j.success==='true'||j.success===true){msg.className='ok';msg.textContent='Listo, recibí tu mensaje. Te respondo pronto.';e.target.reset();}
-else{throw 0}
-})
-.catch(function(){msg.className='err';msg.textContent='No se pudo enviar. Escribime a '+MAIL+' o por Instagram.';})
-.finally(function(){btn.disabled=false;btn.textContent='Enviar mensaje';});
+var MAIL = 'murva.design@hotmail.com';
+
+document.getElementById('f').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var form = this,
+      btn = document.getElementById('send'),
+      msg = document.getElementById('msg'),
+      d = new FormData(form);
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  msg.className = '';
+  msg.textContent = '';
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: d
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (j) {
+    if (j.success) {
+      msg.className = 'ok';
+      msg.textContent = 'Listo, recibí tu consulta. Te respondo pronto.';
+      form.reset();
+    } else { throw 0; }
+  })
+  .catch(function () {
+    var body = 'Nombre: ' + form.name.value +
+               '\nMail: ' + form.email.value +
+               '\nServicio: ' + form.servicio.value +
+               '\n\n' + form.message.value;
+    msg.className = 'err';
+    msg.innerHTML = 'No se pudo enviar automáticamente. <a href="mailto:' + MAIL +
+      '?subject=' + encodeURIComponent('Consulta desde la web') +
+      '&body=' + encodeURIComponent(body) +
+      '">Tocá acá para enviarlo desde tu mail</a>.';
+  })
+  .finally(function () {
+    btn.disabled = false;
+    btn.textContent = 'Enviar mensaje';
+  });
 });
 </script>
 </body>
 </html>
+
