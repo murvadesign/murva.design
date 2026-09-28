@@ -138,21 +138,60 @@ nav ul{display:none}
 </div>
 </div>
 
-<form id="f">
-  <input type="hidden" name="access_key" value="3525ef6e-621a-49b2-95de-540cd38c20c4">
-  <input type="hidden" name="subject" value="Nueva consulta desde la web de Murva">
-  <input type="hidden" name="from_name" value="Web Murva Design">
-  <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+<form
+  id="f"
+  action="https://api.web3forms.com/submit"
+  method="POST"
+>
 
-  <label>Tu nombre
-    <input name="name" required autocomplete="name">
+  <input
+    type="hidden"
+    name="access_key"
+    value="3525ef6e-621a-49b2-95de-540cd38c20c4"
+  >
+
+  <input
+    type="hidden"
+    name="subject"
+    value="Nueva consulta desde la web de Murva"
+  >
+
+  <input
+    type="hidden"
+    name="from_name"
+    value="Web Murva Design"
+  >
+
+  <input
+    type="checkbox"
+    name="botcheck"
+    style="display:none"
+    tabindex="-1"
+    autocomplete="off"
+  >
+
+  <label>
+    Tu nombre
+    <input
+      type="text"
+      name="name"
+      required
+      autocomplete="name"
+    >
   </label>
 
-  <label>Tu mail
-    <input type="email" name="email" required autocomplete="email">
+  <label>
+    Tu mail
+    <input
+      type="email"
+      name="email"
+      required
+      autocomplete="email"
+    >
   </label>
 
-  <label>¿Qué necesitás?
+  <label>
+    ¿Qué necesitás?
     <select name="servicio">
       <option>Community management</option>
       <option>Edición de videos</option>
@@ -164,62 +203,27 @@ nav ul{display:none}
     </select>
   </label>
 
-  <label>Tu consulta
-    <textarea name="message" required></textarea>
+  <label>
+    Tu consulta
+    <textarea
+      name="message"
+      required
+    ></textarea>
   </label>
 
-  <button class="btn" type="submit" id="send">Enviar mensaje</button>
-  <p id="msg" role="status" aria-live="polite"></p>
+  <button
+    class="btn"
+    type="submit"
+  >
+    Enviar mensaje
+  </button>
+
 </form>
 </div></section>
 </main>
 
 <footer><div class="wrap"><b>Murva Design</b> · Diseño · Movimiento · © 2026</div></footer>
 
-<script>
-var MAIL = 'murva.design@hotmail.com';
 
-document.getElementById('f').addEventListener('submit', function (e) {
-  e.preventDefault();
-  var form = this,
-      btn = document.getElementById('send'),
-      msg = document.getElementById('msg'),
-      d = new FormData(form);
-
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-  msg.className = '';
-  msg.textContent = '';
-
-  fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: { 'Accept': 'application/json' },
-    body: d
-  })
-  .then(function (r) { return r.json(); })
-  .then(function (j) {
-    if (j.success) {
-      msg.className = 'ok';
-      msg.textContent = 'Listo, recibí tu consulta. Te respondo pronto.';
-      form.reset();
-    } else { throw 0; }
-  })
-  .catch(function () {
-    var body = 'Nombre: ' + form.name.value +
-               '\nMail: ' + form.email.value +
-               '\nServicio: ' + form.servicio.value +
-               '\n\n' + form.message.value;
-    msg.className = 'err';
-    msg.innerHTML = 'No se pudo enviar automáticamente. <a href="mailto:' + MAIL +
-      '?subject=' + encodeURIComponent('Consulta desde la web') +
-      '&body=' + encodeURIComponent(body) +
-      '">Tocá acá para enviarlo desde tu mail</a>.';
-  })
-  .finally(function () {
-    btn.disabled = false;
-    btn.textContent = 'Enviar mensaje';
-  });
-});
-</script>
 </body>
 </html>
