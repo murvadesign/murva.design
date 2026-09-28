@@ -139,6 +139,9 @@ nav ul{display:none}
 </div>
 
 <form
+
+<input type="hidden" name="access_key" value="3525ef6e-621a-49b2-95de-540cd38c20c4">
+
   id="f"
   action="https://api.web3forms.com/submit"
   method="POST"
@@ -227,3 +230,50 @@ nav ul{display:none}
 
 </body>
 </html>
+
+<script>
+document.getElementById('f').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const form = this;
+  const button = form.querySelector('button');
+  const msg = document.createElement('p');
+
+  button.disabled = true;
+  button.textContent = 'Enviando...';
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      msg.textContent = '✓ Mensaje enviado correctamente. Te responderé pronto.';
+      msg.style.marginTop = '15px';
+
+      form.appendChild(msg);
+      form.reset();
+    } else {
+      throw new Error('Error al enviar');
+    }
+
+  } catch (error) {
+    msg.textContent = 'No se pudo enviar el mensaje. Intentá nuevamente.';
+    msg.style.marginTop = '15px';
+
+    form.appendChild(msg);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Enviar mensaje';
+  }
+});
+</script>
